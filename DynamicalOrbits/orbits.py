@@ -12,54 +12,73 @@ Equation of motion (in polar coordinates): F = m * d^2/dt^2 r = -d/dr V(r)
 
 # Parameters:
 m = 2
-t = np.linspace(0,200,20)
-stateinit = (2,1,0.2,0.1) #(r,theta,rdot,thetadot)
+t = np.linspace(0,20,200)
+statei_r = (2,0.2) #(r,rdot)
+statei_theta = (1,0.1) #(theta,thetador)
 
 #ecuación: exponencial: d/dx f(x) - f(x) = 0
-def equations(state, t, m):
+def equation_r(state, t, m):
     r = state[0]
-    theta = state[1]
-    rdot = state[2]
-    thetadot = state[3]
+    rdot = state[1]
     dr = rdot
+    drdot = (1/m) * (3/(r ** 4) - 1/(r ** 2))
+    dstater_dt = [dr,drdot]
+    return dstater_dt
+
+def equation_theta(state, t):
+    theta = state[0]
+    thetadot = state[1]
     dtheta = thetadot
-    drdot = (1/2) * (3/(r ** 4) - 1/(r ** 2))
     dthetadot = 0
-    dstate_dt = [dr,dtheta,drdot,dthetadot]
-    return dstate_dt
+    dstatetheta_dt = [dtheta,dthetadot]
+    return dstatetheta_dt
 
 #solve the ode
-state = odeint(equations, stateinit, t, args = (m,))
+stater = odeint(equation_r, statei_r, t, args = (m,))
+statetheta = odeint(equation_theta, statei_theta, t)
 
 # plotting the trajectory
 plt.style.use('fivethirtyeight')
 
 fig, ax = plt.subplots()
+fig2, ax2 = plt.subplots()
 
 ax.set_title('Orbital motion')
+ax2.set_title('Potential')
+
+rvals = np.linspace(0.01,25,1000)
+ax2.plot(rvals, 1/np.power(rvals,3) - 1/rvals, label =  "V(r)")
+ax2.legend(loc = "best")
+
+ax2.set_xlim([-1, 20])
+ax2.set_ylim([-1, 5])
+
+print(stater.shape)
+print(statetheta.shape)
+
+print(stater[0])
+print(stater[1])
+print(statetheta[0])
+print(statetheta[1])
 
 def draw_orbit(i):
-    ax.cla()
 
+    print(i)
+    ax.cla()
     #ax.set_aspect('equal', adjustable='box')
 
-    xf = state[i,0] * np.sin(state[i,0])
-    yf = state[i,0] * np.cos(state[i,0])
-
-    #ax4.plot((0, xf), (0, yf), 'k', linewidth = 3)
+    xf = stater[i,0] * np.sin(statetheta[i,0])
+    yf = stater[i,0] * np.cos(statetheta[i,0])
 
     ax.plot(xf, yf,'or', label = 'm = 2')
 
-    ax.set_xlim([-20, 20])
-    ax.set_ylim([-20, 20])
+    ax.set_xlim([-10, 10])
+    ax.set_ylim([-10, 10])
     ax.legend(loc = 'best')
 
-ani = FuncAnimation(fig, draw_orbit, interval = 100)
+ani = FuncAnimation(fig, draw_orbit, frames  = 100, interval = 10, repeat = True)
 
 plt.show()
-
-
-
 
 
 
