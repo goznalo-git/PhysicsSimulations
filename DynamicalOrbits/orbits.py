@@ -41,29 +41,25 @@ statetheta = odeint(equation_theta, statei_theta, t)
 plt.style.use('fivethirtyeight')
 
 fig, ax = plt.subplots()
-fig2, ax2 = plt.subplots()
+fig2, ((ax1,ax2),(ax3,ax4)) = plt.subplots(ncols = 2, nrows = 2)
 
 ax.set_title('Orbital motion')
+ax1.set_title('Radial phase space')
 ax2.set_title('Potential')
+ax3.set_title('Angular phase space')
+
+ax1.plot(stater[:,0],stater[:,1], linewidth = 3, label = "m = 2")
 
 rvals = np.linspace(0.01,25,1000)
 ax2.plot(rvals, 1/np.power(rvals,3) - 1/rvals, label =  "V(r)")
 ax2.legend(loc = "best")
 
+ax3.plot(statetheta[:,0],statetheta[:,1], linewidth = 3, label = "m = 2")
+
 ax2.set_xlim([-1, 20])
 ax2.set_ylim([-1, 5])
 
-print(stater.shape)
-print(statetheta.shape)
-
-print(stater[0])
-print(stater[1])
-print(statetheta[0])
-print(statetheta[1])
-
 def draw_orbit(i):
-
-    print(i)
     ax.cla()
     #ax.set_aspect('equal', adjustable='box')
 
