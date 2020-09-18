@@ -50,14 +50,18 @@ def newpoint(i):
 
     #ax.add_artist(infobox)
 
+frames = 200
 
-ani = FuncAnimation(fig, newpoint, frames = 100, interval = 100, repeat = False)
+ani = FuncAnimation(fig, newpoint, frames = frames, interval = 100, repeat = False)
 
 ax.legend(handles = [square, circle], title='Legend', bbox_to_anchor=(1.05, 1), loc='upper left') #bbox_to_anchor = (x-distance from center, y-distance from center)
 
 #fig.text(x,y (from bottom), text, horizontalalignment optional argument)
 fig.text(.5, .005, "Random points over a square with a circle of radius 1 inscribed in it.\n" + r"Pi can be computed as 4 $\times$ Area circle/Area square = 4 $\times$ Points out/Points in", ha='center')
 #fig.text(.5, .005, "\n" + r"Pi can be computed as $\dfrac{Points out}{Points in}$, ", ha='center')
+
+anifile = f"./MonteCarloPi-{frames}.gif"
+ani.save(anifile, writer='imagemagick')
 
 plt.show()
 
