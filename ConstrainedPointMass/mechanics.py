@@ -17,11 +17,11 @@ Rplot = R + 0.1 * R
 g = 9.8
 m = 1
 
-init_theta = [0.5,1]
-init_phi = [0, 0.5] #[phi_0,w], constant angular velocity
+init_theta = [2.5,1]
+init_phi = [0, 1] #[phi_0,w], constant angular velocity
 w = init_phi[1]
 
-t = np.linspace(0,40,500)
+t = np.linspace(0,20,400)
 
 #equations of motion: r=R fixed, phi = phi_0 + w * t and
 def equation_theta(state, t, g, R, w):
@@ -37,7 +37,7 @@ theta = state[:,0]
 thetadot = state[:,1]
 
 ###### phase space #######
-fig, (ax1, ax2) = plt.subplots(1,2)
+fig, (ax1, ax2) = plt.subplots(1,2, figsize=(10, 5), dpi=100)
 
 ax1.set_title(r"$\theta$ phase space")
 ax1.set_xlabel(r"$\theta$")
@@ -48,8 +48,10 @@ ax2.set_xlabel("t")
 ax2.legend(loc = "best")
 
 ax1.plot(theta, m * R**2 * thetadot)
-ax2.plot(t[0:50],theta[0:50], label  = r"$\theta$")
-ax2.plot(t[0:50],thetadot[0:50], label  = r"$\dot{\theta}$")
+
+rangeplot = int(len(t)/5)
+ax2.plot(t[0:rangeplot],theta[0:rangeplot], label  = r"$\theta$")
+ax2.plot(t[0:rangeplot],thetadot[0:rangeplot], label  = r"$\dot{\theta}$")
 
 
 ###### 3d plot ###########
@@ -73,17 +75,20 @@ def plotanim(timenow):
     yf = R * np.sin(thetanow) * np.cos(init_phi[0] + w * timenow/10)
     zf = - R * np.cos(thetanow)
 
-    print(xf)
-    print(yf)
-    print(zf)
-
     ax3d.plot((0,0),(0,0), (-Rplot,Rplot), '-k', label='z-axis')
-    ax3d.plot(- R * np.sin(circtheta) * np.sin(init_phi[0] + w * timenow/10), R * np.sin(circtheta) * np.cos(init_phi[0] + w * timenow/10), - R * np.cos(circtheta), linewidth = 3, label = "Circle")
+    ax3d.plot(- R * np.sin(circtheta) * np.sin(init_phi[0] + w * timenow/10), R * np.sin(circtheta) * np.cos(init_phi[0] + w * timenow/10), - R * np.cos(circtheta), linewidth = 3, label = "Ring")
 
     ax3d.plot([xf], [yf], [zf], 'or', markersize = 10, label = "Point mass")
 
-frames  = 500
+frames  = 200
 anim = FuncAnimation(fig3d, plotanim, frames  = frames, interval = 10)
+
+figfile = f"./ConstrainedPointMass/PhaseSpace-w={init_phi[1]}.png"
+fig.savefig(figfile, facecolor='w', edgecolor='w',format='png', dpi=100)
+
+
+anifile = f"./ConstrainedPointMass/animation-w={init_phi[1]}.gif"
+anim.save(anifile, writer='imagemagick')
 
 plt.show()
 
