@@ -25,7 +25,7 @@ t = np.linspace(0,20,400)
 
 #equations of motion: r=R fixed, phi = phi_0 + w * t and
 def equation_theta(state, t, g, R, w):
-    theta = state[0]
+    theta = np.mod(state[0], 2 * np.pi) - np.pi # theta ranges from -pi to pi
     thetadot = state[1]
     dtheta = thetadot
     dthetadot = -(g/R) * np.sin(theta) + (w ** 2) / 2 * np.sin(2*theta)
@@ -33,7 +33,7 @@ def equation_theta(state, t, g, R, w):
 
 state = odeint(equation_theta, init_theta, t, args = (g,R,w))
 
-theta = state[:,0]
+theta = np.mod(state[:,0], 2 * np.pi) - np.pi
 thetadot = state[:,1]
 
 ###### phase space #######
@@ -42,10 +42,9 @@ fig, (ax1, ax2) = plt.subplots(1,2, figsize=(10, 5), dpi=100)
 ax1.set_title(r"$\theta$ phase space")
 ax1.set_xlabel(r"$\theta$")
 ax1.set_ylabel(r"$P_\theta$")
+ax1.set_xlim(-np.pi, np.pi) # theta ranges from -pi to pi
 ax2.set_title(r"$\theta$ and $\dot{\theta}$ over time")
 ax2.set_xlabel("t")
-
-ax2.legend(loc = "best")
 
 ax1.plot(theta, m * R**2 * thetadot)
 
@@ -53,6 +52,7 @@ rangeplot = int(len(t)/5)
 ax2.plot(t[0:rangeplot],theta[0:rangeplot], label  = r"$\theta$")
 ax2.plot(t[0:rangeplot],thetadot[0:rangeplot], label  = r"$\dot{\theta}$")
 
+ax2.legend(title = "Legend", loc='upper left', bbox_to_anchor = [1.05,1])
 
 ###### 3d plot ###########
 #twice as wide as it is tall
@@ -86,9 +86,8 @@ anim = FuncAnimation(fig3d, plotanim, frames  = frames, interval = 10)
 figfile = f"./ConstrainedPointMass/PhaseSpace-w={init_phi[1]}.png"
 fig.savefig(figfile, facecolor='w', edgecolor='w',format='png', dpi=100)
 
-
 anifile = f"./ConstrainedPointMass/animation-w={init_phi[1]}.gif"
-anim.save(anifile, writer='imagemagick')
+#anim.save(anifile, writer='imagemagick')
 
 plt.show()
 
